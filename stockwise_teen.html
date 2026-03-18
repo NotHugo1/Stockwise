@@ -1,0 +1,2903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StockWise – Invest Smarter</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Syne:wght@400;500;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a24;
+    --card: #14141e;
+    --card2: #1e1e2e;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --accent: #00f5a0;
+    --accent2: #00d4ff;
+    --accent3: #ff6b35;
+    --accent4: #a855f7;
+    --red: #ff4757;
+    --text: #f0f0f5;
+    --text2: #9090a8;
+    --text3: #606078;
+    --glow: 0 0 20px rgba(0,245,160,0.3);
+    --glow2: 0 0 20px rgba(0,212,255,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 100;
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-logo span {
+    color: var(--accent);
+  }
+
+  .logo-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: var(--glow);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+  }
+
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--bg3);
+    border-radius: 10px;
+    padding: 4px;
+  }
+
+  .nav-tab {
+    padding: 6px 14px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text2);
+    border: none;
+    background: none;
+  }
+
+  .nav-tab.active {
+    background: var(--card2);
+    color: var(--text);
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .xp-badge {
+    background: linear-gradient(135deg, var(--accent4), #7c3aed);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--bg);
+    cursor: pointer;
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    margin-top: 60px;
+    display: grid;
+    grid-template-columns: 260px 1fr 300px;
+    gap: 0;
+    min-height: calc(100vh - 60px);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* SIDEBAR LEFT */
+  .sidebar-left {
+    border-right: 1px solid var(--border);
+    padding: 20px 16px;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .sidebar-section {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 8px 10px 4px;
+    margin-top: 8px;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.18s;
+    font-size: 14px;
+    color: var(--text2);
+    font-weight: 400;
+  }
+
+  .sidebar-item:hover, .sidebar-item.active {
+    background: var(--card);
+    color: var(--text);
+  }
+
+  .sidebar-item.active {
+    color: var(--accent);
+  }
+
+  .sidebar-icon {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .sidebar-item.active .sidebar-icon {
+    background: rgba(0,245,160,0.1);
+  }
+
+  .portfolio-mini {
+    margin-top: auto;
+    background: var(--card);
+    border-radius: 12px;
+    padding: 14px;
+    border: 1px solid var(--border);
+  }
+
+  .portfolio-mini-label {
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .portfolio-mini-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .portfolio-mini-change {
+    font-size: 12px;
+    color: var(--accent);
+    margin-top: 2px;
+  }
+
+  /* FEED */
+  .feed {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 720px;
+  }
+
+  /* HERO BANNER */
+  .hero-banner {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-banner::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(0,245,160,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .hero-sub {
+    font-size: 13px;
+    color: var(--text2);
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+  }
+
+  .hero-stat {
+    text-align: center;
+  }
+
+  .hero-stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .hero-stat-label {
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .level-ring {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+  }
+
+  .level-ring svg {
+    transform: rotate(-90deg);
+  }
+
+  .level-ring-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .level-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .level-label {
+    font-size: 9px;
+    color: var(--text3);
+    text-transform: uppercase;
+  }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-pill {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .section-pill:hover {
+    color: var(--text);
+    border-color: var(--accent);
+  }
+
+  /* NEWS CARDS */
+  .news-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+  }
+
+  .news-card:hover {
+    border-color: var(--border2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+
+  .news-card-top {
+    padding: 16px 18px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .news-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .news-category {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 5px;
+  }
+
+  .cat-geopolitics { background: rgba(255,107,53,0.15); color: var(--accent3); }
+  .cat-tech { background: rgba(0,212,255,0.12); color: var(--accent2); }
+  .cat-energy { background: rgba(168,85,247,0.12); color: var(--accent4); }
+  .cat-finance { background: rgba(0,245,160,0.12); color: var(--accent); }
+
+  .news-time {
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  .news-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .news-body {
+    font-size: 13.5px;
+    color: var(--text2);
+    line-height: 1.65;
+  }
+
+  .insight-box {
+    margin: 0 18px 16px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .insight-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .insight-header .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  .insight-text {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  .stocks-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .stock-chip {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--card2);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .stock-chip:hover {
+    border-color: var(--accent);
+    background: rgba(0,245,160,0.05);
+  }
+
+  .stock-chip-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stock-ticker {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .stock-name {
+    font-size: 10px;
+    color: var(--text3);
+  }
+
+  .stock-change {
+    margin-left: auto;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .up { color: var(--accent); }
+  .down { color: var(--red); }
+
+  .card-actions {
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 10px 18px;
+    gap: 8px;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.18s;
+  }
+
+  .btn-learn {
+    background: rgba(0,245,160,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(0,245,160,0.2);
+  }
+
+  .btn-learn:hover {
+    background: rgba(0,245,160,0.18);
+  }
+
+  .btn-buy {
+    background: linear-gradient(135deg, var(--accent), #00c470);
+    color: var(--bg);
+    font-weight: 700;
+  }
+
+  .btn-buy:hover {
+    transform: scale(1.02);
+    box-shadow: var(--glow);
+  }
+
+  .btn-watch {
+    background: var(--bg3);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+
+  .btn-watch:hover {
+    color: var(--text);
+    border-color: var(--border2);
+  }
+
+  .difficulty-badge {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  .diff-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+  }
+
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 85vh;
+    overflow-y: auto;
+    transform: translateY(20px);
+    transition: transform 0.25s;
+  }
+
+  .modal-overlay.open .modal {
+    transform: translateY(0);
+  }
+
+  .modal-header {
+    padding: 20px 24px 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .modal-close {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--bg3);
+    border: none;
+    color: var(--text2);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.18s;
+  }
+
+  .modal-close:hover {
+    color: var(--text);
+    background: var(--card2);
+  }
+
+  .modal-body {
+    padding: 16px 24px 24px;
+  }
+
+  .modal-category {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.3;
+    margin-bottom: 16px;
+  }
+
+  .explainer-section {
+    margin-bottom: 20px;
+  }
+
+  .explainer-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .explainer-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .explainer-text {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+
+  .chain-viz {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 16px 0;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .chain-node {
+    background: var(--card2);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.4;
+    flex: 1;
+    min-width: 80px;
+  }
+
+  .chain-node strong {
+    display: block;
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  .chain-arrow {
+    font-size: 18px;
+    color: var(--text3);
+    flex-shrink: 0;
+  }
+
+  .verdict-box {
+    border-radius: 12px;
+    padding: 16px;
+    margin: 16px 0;
+    border: 1px solid;
+  }
+
+  .verdict-buy {
+    background: rgba(0,245,160,0.05);
+    border-color: rgba(0,245,160,0.25);
+  }
+
+  .verdict-caution {
+    background: rgba(255,197,0,0.05);
+    border-color: rgba(255,197,0,0.25);
+  }
+
+  .verdict-sell {
+    background: rgba(255,71,87,0.05);
+    border-color: rgba(255,71,87,0.25);
+  }
+
+  .verdict-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .verdict-text {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  .glossary-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .glossary-pill {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--accent2);
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+
+  .glossary-pill:hover {
+    background: rgba(0,212,255,0.08);
+    border-color: rgba(0,212,255,0.3);
+  }
+
+  .modal-cta {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .cta-primary {
+    flex: 1;
+    padding: 13px;
+    background: linear-gradient(135deg, var(--accent), #00c470);
+    color: var(--bg);
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .cta-primary:hover {
+    box-shadow: var(--glow);
+    transform: translateY(-1px);
+  }
+
+  .cta-secondary {
+    padding: 13px 18px;
+    background: var(--card2);
+    color: var(--text2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .quiz-section {
+    background: var(--bg3);
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 16px;
+  }
+
+  .quiz-q {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .quiz-opt {
+    padding: 10px 14px;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .quiz-opt:hover {
+    border-color: var(--accent);
+    color: var(--text);
+    background: rgba(0,245,160,0.04);
+  }
+
+  .quiz-opt.correct {
+    border-color: var(--accent);
+    background: rgba(0,245,160,0.1);
+    color: var(--accent);
+  }
+
+  .quiz-opt.wrong {
+    border-color: var(--red);
+    background: rgba(255,71,87,0.08);
+    color: var(--red);
+  }
+
+  .quiz-feedback {
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 10px 12px;
+    border-radius: 8px;
+    display: none;
+  }
+
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.good { background: rgba(0,245,160,0.08); color: var(--accent); }
+  .quiz-feedback.bad { background: rgba(255,71,87,0.08); color: var(--red); }
+
+  /* RIGHT SIDEBAR */
+  .sidebar-right {
+    border-left: 1px solid var(--border);
+    padding: 20px 16px;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .widget {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+  }
+
+  .widget-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text3);
+    margin-bottom: 12px;
+  }
+
+  .ticker-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+
+  .ticker-row:last-child { border-bottom: none; }
+  .ticker-row:hover { opacity: 0.8; }
+
+  .ticker-left { display: flex; align-items: center; gap: 8px; }
+
+  .ticker-logo {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--bg);
+  }
+
+  .ticker-symbol {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .ticker-price {
+    font-size: 13px;
+    font-weight: 500;
+    text-align: right;
+  }
+
+  .ticker-change-sm {
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .mini-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 28px;
+    margin: 0 8px;
+  }
+
+  .mini-bar {
+    width: 3px;
+    border-radius: 2px;
+    transition: height 0.3s;
+  }
+
+  .glossary-item {
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .glossary-item:last-child { border-bottom: none; }
+
+  .glossary-term {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent2);
+    margin-bottom: 2px;
+  }
+
+  .glossary-def {
+    font-size: 11px;
+    color: var(--text3);
+    line-height: 1.5;
+  }
+
+  .streak-widget {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .streak-fire {
+    font-size: 32px;
+    line-height: 1;
+  }
+
+  .streak-info {}
+
+  .streak-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent3);
+    line-height: 1;
+  }
+
+  .streak-label {
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  /* LOADING STATE */
+  .ai-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text3);
+    font-size: 13px;
+    padding: 8px 0;
+  }
+
+  .ai-dots span {
+    display: inline-block;
+    width: 5px; height: 5px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: dot-bounce 1.2s infinite;
+  }
+
+  .ai-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .ai-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes dot-bounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.3; }
+    40% { transform: translateY(-5px); opacity: 1; }
+  }
+
+  .ai-insight-area {
+    min-height: 40px;
+    font-size: 13.5px;
+    color: var(--text2);
+    line-height: 1.65;
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: rgba(0,245,160,0.03);
+    border: 1px solid rgba(0,245,160,0.12);
+  }
+
+  .ai-explain-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(0,245,160,0.08);
+    border: 1px solid rgba(0,245,160,0.2);
+    border-radius: 8px;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .ai-explain-btn:hover {
+    background: rgba(0,245,160,0.15);
+  }
+
+  .ai-explain-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .spark {
+    display: inline-block;
+    animation: spin 2s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* ANIMATIONS */
+  .fade-in {
+    animation: fadeIn 0.4s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .news-card { animation: fadeIn 0.4s ease forwards; }
+  .news-card:nth-child(2) { animation-delay: 0.05s; }
+  .news-card:nth-child(3) { animation-delay: 0.1s; }
+  .news-card:nth-child(4) { animation-delay: 0.15s; }
+
+  /* TABS in feed */
+  .feed-tabs {
+    display: flex;
+    gap: 6px;
+  }
+
+  .feed-tab {
+    padding: 7px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text2);
+    transition: all 0.18s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .feed-tab.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+
+  .hot-badge {
+    display: inline-block;
+    background: var(--accent3);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 5px;
+    border-radius: 4px;
+    margin-left: 4px;
+    vertical-align: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* REFRESH BUTTON */
+  .refresh-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: linear-gradient(135deg, rgba(0,245,160,0.12), rgba(0,212,255,0.12));
+    border: 1px solid rgba(0,245,160,0.3);
+    border-radius: 20px;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .refresh-btn:hover {
+    background: linear-gradient(135deg, rgba(0,245,160,0.2), rgba(0,212,255,0.2));
+    box-shadow: var(--glow);
+  }
+  .refresh-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .progress-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    width: 380px;
+    max-width: 90vw;
+    transition: border-color 0.3s;
+  }
+
+  .progress-item:has(.prog-icon:not(:empty)) {
+    border-color: var(--border2);
+  }
+
+  .refresh-subtitle {
+    font-size: 14px;
+    color: var(--text2);
+    text-align: center;
+    max-width: 340px;
+    line-height: 1.5;
+  }
+
+  .progress-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  /* REFRESH PROGRESS OVERLAY */
+  .refresh-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,10,15,0.92);
+    backdrop-filter: blur(16px);
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .refresh-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .refresh-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    text-align: center;
+  }
+  .refresh-subtitle {
+    font-size: 14px;
+    color: var(--text2);
+    text-align: center;
+    max-width: 360px;
+    line-height: 1.6;
+  }
+  .progress-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 360px;
+  }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.3s;
+  }
+  .progress-row.active {
+    border-color: var(--accent);
+    background: rgba(0,245,160,0.05);
+  }
+  .progress-row.done {
+    border-color: rgba(0,245,160,0.3);
+    opacity: 0.7;
+  }
+  .progress-row.error {
+    border-color: rgba(255,71,87,0.3);
+    opacity: 0.7;
+  }
+  .progress-icon { font-size: 20px; flex-shrink: 0; }
+  .progress-info { flex: 1; }
+  .progress-name { font-size: 14px; font-weight: 600; }
+  .progress-status { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .progress-spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(0,245,160,0.2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+    display: none;
+  }
+  .progress-row.active .progress-spinner { display: block; }
+  .progress-check { font-size: 16px; display: none; }
+  .progress-row.done .progress-check { display: block; }
+  .progress-row.error .progress-check { display: block; }
+
+  /* AI-GENERATED card badge */
+  .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(0,212,255,0.12));
+    border: 1px solid rgba(168,85,247,0.3);
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--accent4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+    margin-left: 4px;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="logo-dot"></div>
+    Stock<span>Wise</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-page="feed" onclick="switchNavTab('feed',this)">📰 Feed</button>
+    <button class="nav-tab" data-page="learn" onclick="switchNavTab('learn',this)">📚 Learn</button>
+    <button class="nav-tab" data-page="portfolio" onclick="switchNavTab('portfolio',this)">📈 Portfolio</button>
+  </div>
+  <div class="nav-right">
+    <button class="refresh-btn" id="refreshBtn" onclick="refreshAllStories()" title="AI generates fresh stories for every category">
+      <span id="refreshIcon">🔄</span> Refresh Stories
+    </button>
+    <div class="xp-badge">⚡ 1,240 XP</div>
+    <div class="avatar">AJ</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="sidebar-left">
+    <div class="sidebar-section">Explore</div>
+    <div class="sidebar-item active" onclick="navigate('feed',this)">
+      <div class="sidebar-icon">🌍</div>
+      World Events
+    </div>
+    <div class="sidebar-item" onclick="navigate('trending',this)">
+      <div class="sidebar-icon">🔥</div>
+      Trending Stocks
+    </div>
+    <div class="sidebar-item" onclick="navigate('lessons',this)">
+      <div class="sidebar-icon">🎓</div>
+      Lessons
+    </div>
+    <div class="sidebar-item" onclick="navigate('papertrade',this)">
+      <div class="sidebar-icon">🧪</div>
+      Paper Trade
+    </div>
+
+    <div class="sidebar-section">Categories</div>
+    <div class="sidebar-item" onclick="navigate('defense',this)">
+      <div class="sidebar-icon">🛡️</div>
+      Defense & Military
+    </div>
+    <div class="sidebar-item" onclick="navigate('tech',this)">
+      <div class="sidebar-icon">💡</div>
+      Tech & AI
+    </div>
+    <div class="sidebar-item" onclick="navigate('energy',this)">
+      <div class="sidebar-icon">⚡</div>
+      Energy
+    </div>
+    <div class="sidebar-item" onclick="navigate('healthcare',this)">
+      <div class="sidebar-icon">🏥</div>
+      Healthcare
+    </div>
+    <div class="sidebar-item" onclick="navigate('evs',this)">
+      <div class="sidebar-icon">🚗</div>
+      EVs & Transport
+    </div>
+
+    <div class="portfolio-mini">
+      <div class="portfolio-mini-label">Paper Portfolio</div>
+      <div class="portfolio-mini-value">$10,480</div>
+      <div class="portfolio-mini-change">▲ +$480 (+4.8%) all time</div>
+    </div>
+  </div>
+
+  <!-- MAIN FEED -->
+  <div class="feed" id="mainFeed">
+    <!-- populated by JS -->
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="sidebar-right">
+
+    <div class="widget">
+      <div class="widget-title">🔥 Streak</div>
+      <div class="streak-widget">
+        <div class="streak-fire">🔥</div>
+        <div class="streak-info">
+          <div class="streak-num">7</div>
+          <div class="streak-label">days in a row</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="widget">
+      <div class="widget-title">📊 Trending Now</div>
+      <div class="ticker-row">
+        <div class="ticker-left">
+          <div class="ticker-logo" style="background:linear-gradient(135deg,#00f5a0,#00c470)">P</div>
+          <div>
+            <div class="ticker-symbol">PLTR</div>
+          </div>
+        </div>
+        <div class="mini-chart">
+          <div class="mini-bar up" style="height:10px;background:var(--accent)"></div>
+          <div class="mini-bar up" style="height:14px;background:var(--accent)"></div>
+          <div class="mini-bar up" style="height:11px;background:var(--accent)"></div>
+          <div class="mini-bar up" style="height:18px;background:var(--accent)"></div>
+          <div class="mini-bar up" style="height:22px;background:var(--accent)"></div>
+          <div class="mini-bar up" style="height:28px;background:var(--accent)"></div>
+        </div>
+        <div class="ticker-price">
+          <div>$24.81</div>
+          <div class="ticker-change-sm up">▲ +6.2%</div>
+        </div>
+      </div>
+      <div class="ticker-row">
+        <div class="ticker-left">
+          <div class="ticker-logo" style="background:linear-gradient(135deg,#76b900,#558800)">N</div>
+          <div>
+            <div class="ticker-symbol">NVDA</div>
+          </div>
+        </div>
+        <div class="mini-chart">
+          <div class="mini-bar" style="height:18px;background:var(--accent)"></div>
+          <div class="mini-bar" style="height:15px;background:var(--accent)"></div>
+          <div class="mini-bar" style="height:20px;background:var(--accent)"></div>
+          <div class="mini-bar" style="height:22px;background:var(--accent)"></div>
+          <div class="mini-bar" style="height:19px;background:var(--accent)"></div>
+          <div class="mini-bar" style="height:24px;background:var(--accent)"></div>
+        </div>
+        <div class="ticker-price">
+          <div>$136.40</div>
+          <div class="ticker-change-sm up">▲ +2.9%</div>
+        </div>
+      </div>
+      <div class="ticker-row">
+        <div class="ticker-left">
+          <div class="ticker-logo" style="background:linear-gradient(135deg,#ff4757,#cc0011)">D</div>
+          <div>
+            <div class="ticker-symbol">DAL</div>
+          </div>
+        </div>
+        <div class="mini-chart">
+          <div class="mini-bar" style="height:22px;background:var(--red)"></div>
+          <div class="mini-bar" style="height:18px;background:var(--red)"></div>
+          <div class="mini-bar" style="height:20px;background:var(--red)"></div>
+          <div class="mini-bar" style="height:16px;background:var(--red)"></div>
+          <div class="mini-bar" style="height:14px;background:var(--red)"></div>
+          <div class="mini-bar" style="height:10px;background:var(--red)"></div>
+        </div>
+        <div class="ticker-price">
+          <div>$47.20</div>
+          <div class="ticker-change-sm down">▼ -1.8%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="widget">
+      <div class="widget-title">📖 Term of the Day</div>
+      <div class="glossary-item">
+        <div class="glossary-term">Market Capitalization</div>
+        <div class="glossary-def">The total value of a company's shares. Calculated by: share price × total shares. Apple is worth ~$3 trillion. That's their "market cap."</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Sector Rotation</div>
+        <div class="glossary-def">When investors move money from one industry to another based on economic changes. Like moving from airlines to oil stocks when gas prices spike.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Volatility</div>
+        <div class="glossary-def">How much a stock's price swings up and down. High volatility = risky but potentially big gains or losses.</div>
+      </div>
+    </div>
+
+    <div class="widget">
+      <div class="widget-title">🏆 Leaderboard</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px">
+          <div style="color:var(--accent3);font-weight:700;width:18px">1</div>
+          <div class="avatar" style="width:26px;height:26px;font-size:11px">MK</div>
+          <div style="flex:1">MiaK</div>
+          <div style="color:var(--accent);font-size:12px;font-weight:600">+18.4%</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px">
+          <div style="color:var(--text3);font-weight:700;width:18px">2</div>
+          <div class="avatar" style="width:26px;height:26px;font-size:11px;background:linear-gradient(135deg,#00d4ff,#0090cc)">JR</div>
+          <div style="flex:1">JRed</div>
+          <div style="color:var(--accent);font-size:12px;font-weight:600">+14.1%</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;background:rgba(0,245,160,0.05);border-radius:8px;padding:4px 6px;border:1px solid rgba(0,245,160,0.15)">
+          <div style="color:var(--text2);font-weight:700;width:18px">4</div>
+          <div class="avatar" style="width:26px;height:26px;font-size:11px">AJ</div>
+          <div style="flex:1">You</div>
+          <div style="color:var(--accent);font-size:12px;font-weight:600">+4.8%</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- REFRESH OVERLAY -->
+<div class="refresh-overlay" id="refreshOverlay">
+  <div style="font-size:48px">✨</div>
+  <div>
+    <div class="refresh-title">AI is writing today's stories</div>
+    <div class="refresh-subtitle">Scanning real-world news and generating fresh insights for every category...</div>
+  </div>
+  <div class="progress-list" id="progressList"></div>
+  <div id="refreshDoneMsg" style="display:none;text-align:center">
+    <div style="font-size:32px;margin-bottom:8px">🎉</div>
+    <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--accent)">All stories updated!</div>
+    <div style="font-size:13px;color:var(--text2);margin-top:4px">Head back to your feed to read them.</div>
+    <button onclick="closeRefreshOverlay()" style="margin-top:16px;padding:12px 28px;background:linear-gradient(135deg,var(--accent),#00c470);color:var(--bg);border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">View Feed 🚀</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" id="modalContent">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<script>
+// ── Page routing ──────────────────────────────────────────────────────────────
+const pages = {
+  feed: buildFeedPage,
+  learn: buildLearnPage,
+  portfolio: buildPortfolioPage,
+  trending: buildTrendingPage,
+  lessons: buildLessonsPage,
+  papertrade: buildPaperTradePage,
+  defense: () => buildCategoryPage('defense'),
+  tech: () => buildCategoryPage('tech'),
+  energy: () => buildCategoryPage('energy'),
+  healthcare: () => buildCategoryPage('healthcare'),
+  evs: () => buildCategoryPage('evs'),
+};
+
+function navigate(pageKey, sidebarEl) {
+  // nav tab highlights
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  const navMap = { feed:'feed', learn:'learn', portfolio:'portfolio', trending:'feed', lessons:'learn', papertrade:'learn', defense:'feed', tech:'feed', energy:'feed', healthcare:'feed', evs:'feed' };
+  const navTabTarget = navMap[pageKey] || pageKey;
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    if (t.dataset.page === navTabTarget) t.classList.add('active');
+  });
+
+  // sidebar highlights
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  if (sidebarEl) sidebarEl.classList.add('active');
+
+  const feed = document.getElementById('mainFeed');
+  feed.innerHTML = '';
+  feed.style.opacity = 0;
+  if (pages[pageKey]) pages[pageKey]();
+  setTimeout(() => { feed.style.transition = 'opacity 0.3s'; feed.style.opacity = 1; }, 20);
+}
+
+function switchNavTab(pageKey, el) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  const feed = document.getElementById('mainFeed');
+  feed.innerHTML = '';
+  feed.style.opacity = 0;
+  if (pages[pageKey]) pages[pageKey]();
+  setTimeout(() => { feed.style.transition = 'opacity 0.3s'; feed.style.opacity = 1; }, 20);
+}
+
+// ── Feed Tab filtering ────────────────────────────────────────────────────────
+function filterFeed(cat, el) {
+  document.querySelectorAll('.feed-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const cards = document.querySelectorAll('.news-card');
+  cards.forEach(c => {
+    if (cat === 'all' || c.dataset.cat === cat) {
+      c.style.display = '';
+    } else {
+      c.style.display = 'none';
+    }
+  });
+}
+
+// ── Build pages ───────────────────────────────────────────────────────────────
+function buildFeedPage() {
+  const feed = document.getElementById('mainFeed');
+  feed.innerHTML = `
+    ${heroBanner()}
+    <div class="feed-tabs">
+      <button class="feed-tab active" onclick="filterFeed('all',this)">All Stories</button>
+      <button class="feed-tab" onclick="filterFeed('geopolitics',this)">Geopolitics</button>
+      <button class="feed-tab" onclick="filterFeed('tech',this)">Tech</button>
+      <button class="feed-tab" onclick="filterFeed('energy',this)">Energy</button>
+    </div>
+    ${newsCard('palantir','geopolitics')}
+    ${newsCard('nvidia','tech')}
+    ${newsCard('oil','energy')}
+  `;
+}
+
+function buildTrendingPage() {
+  const feed = document.getElementById('mainFeed');
+  feed.innerHTML = `
+    <div class="page-header"><div class="page-title">🔥 Trending Stocks</div><div class="page-sub">What everyone's watching right now</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      ${trendingCard('PLTR','Palantir','P','#00f5a0,#00c470','+6.2%',true,'Defense & Intelligence AI','palantir')}
+      ${trendingCard('NVDA','Nvidia','N','#76b900,#558800','+2.9%',true,'AI Chip Monopoly','nvidia')}
+      ${trendingCard('XOM','Exxon','X','#00f5a0,#009955','+2.1%',true,'Oil & Energy','oil')}
+      ${trendingCard('DAL','Delta Air','D','#ff4757,#cc0011','-1.8%',false,'Airline — hurt by oil','oil')}
+      ${trendingCard('LMT','Lockheed','L','#00d4ff,#0090cc','+3.8%',true,'Defense Contractor','palantir')}
+      ${trendingCard('AMD','AMD','A','#ff6b35,#cc4400','+1.7%',true,'AI Chips #2','nvidia')}
+    </div>
+  `;
+}
+
+function trendingCard(ticker, name, letter, grad, change, up, tag, modalId) {
+  return `
+    <div class="news-card" style="cursor:pointer" onclick="openModal('${modalId}')">
+      <div class="news-card-top" style="flex-direction:row;align-items:center;gap:12px">
+        <div class="ticker-logo" style="width:44px;height:44px;border-radius:12px;font-size:18px;background:linear-gradient(135deg,${grad});flex-shrink:0">${letter}</div>
+        <div style="flex:1">
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700">${ticker}</div>
+          <div style="font-size:12px;color:var(--text3)">${name}</div>
+          <div style="margin-top:4px;font-size:11px;background:var(--bg3);display:inline-block;padding:2px 8px;border-radius:4px;color:var(--text2)">${tag}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="stock-change ${up?'up':'down'}" style="font-size:18px;font-weight:700">${change}</div>
+          <div style="font-size:11px;color:var(--text3)">today</div>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="action-btn btn-learn">🎓 Why?</button>
+        <button class="action-btn btn-watch">+ Watch</button>
+      </div>
+    </div>
+  `;
+}
+
+function buildLearnPage() {
+  const feed = document.getElementById('mainFeed');
+  feed.innerHTML = `
+    <div class="page-header"><div class="page-title">📚 Learn Center</div><div class="page-sub">Master investing concepts at your own pace</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      ${lessonCard('🏦','What is a Stock?','Beginner','Learn what it actually means to own part of a company.','lesson','stock-basics',1,'#00f5a0')}
+      ${lessonCard('📈','How Stock Prices Move','Beginner','Supply, demand, and why prices change every second.','lesson','price-movement',2,'#00d4ff')}
+      ${lessonCard('🌍','News & The Market','Intermediate','How world events ripple into your portfolio.','lesson','news-market',3,'#ff6b35')}
+      ${lessonCard('🧺','Diversification','Intermediate','Why not putting all eggs in one basket saves you.','lesson','diversification',4,'#a855f7')}
+      ${lessonCard('📊','Reading a Stock Chart','Intermediate','Candlesticks, trends, and what they mean.','lesson','charts',5,'#00f5a0')}
+      ${lessonCard('🔄','Bull vs Bear Markets','Advanced','What these terms actually mean for your money.','lesson','bull-bear',6,'#ff4757')}
+    </div>
+  `;
+}
+
+function lessonCard(emoji, title, level, desc, type, id, xp, color) {
+  const levelColors = { Beginner:'var(--accent)', Intermediate:'var(--accent3)', Advanced:'var(--red)' };
+  return `
+    <div class="news-card" style="cursor:pointer" onclick="openLesson('${id}')">
+      <div class="news-card-top">
+        <div style="font-size:32px">${emoji}</div>
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700">${title}</div>
+        <div style="font-size:13px;color:var(--text2)">${desc}</div>
+      </div>
+      <div class="card-actions">
+        <span style="font-size:11px;font-weight:600;color:${levelColors[level]};text-transform:uppercase;letter-spacing:0.5px">${level}</span>
+        <span style="font-size:11px;color:var(--text3);margin-left:auto">+${xp*50} XP</span>
+        <button class="action-btn btn-learn" style="margin-left:8px">Start →</button>
+      </div>
+    </div>
+  `;
+}
+
+function buildLessonsPage() { buildLearnPage(); }
+
+function buildPaperTradePage() {
+  const feed = document.getElementById('mainFeed');
+  feed.innerHTML = `
+    <div class="page-header"><div class="page-title">🧪 Paper Trading</div><div class="page-sub">Practice with fake money — no real risk</div></div>
+    <div class="news-card" style="padding:0">
+      <div class="news-card-top">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--accent)">$10,480.00</div>
+            <div style="font-size:13px;color:var(--text3);margin-top:2px">Paper Portfolio Value</div>
+          </div>
+          <div style="text-align:right">
+            <div style="color:var(--accent);font-size:14px;font-weight:600">▲ +$480 (+4.8%)</div>
+            <div style="font-size:12px;color:var(--text3)">All time</div>
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px">
+          ${holdingRow('PLTR','Palantir','P','#00f5a0,#00c470','50 shares','$1,240.50','+$142.50','up')}
+          ${holdingRow('NVDA','Nvidia','N','#76b900,#558800','10 shares','$1,364.00','+$280.00','up')}
+          ${holdingRow('XOM','Exxon','X','#00f5a0,#009955','25 shares','$1,180.00','+$57.50','up')}
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="action-btn btn-buy" onclick="showBuyModal()">+ Buy a Stock</button>
+        <button class="action-btn btn-watch">📊 Full History</button>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-card-top">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:6px">💡 What is Paper Trading?</div>
+        <div style="font-size:13.5px;color:var(--text2);line-height:1.65">Paper trading means practicing with <strong style="color:var(--text)">fake money</strong> so you can learn how to invest without any real risk. You start with $10,000 and make trades based on real market prices. It's the best way to learn before you ever touch real money.</div>
+      </div>
+    </div>
+  `;
+}
+
+function holdingRow(ticker, name, letter, grad, shares, value, gain, dir) {
+  return `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg3);border-radius:10px;border:1px solid var(--border)">
+      <div class="ticker-logo" style="width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,${grad});font-size:14px;font-weight:700;color:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0">${letter}</div>
+      <div style="flex:1">
+        <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700">${ticker}</div>
+        <div style="font-size:11px;color:var(--text3)">${shares}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:14px;font-weight:600">${value}</div>
+        <div class="${dir}" style="font-size:12px;font-weight:600">${gain}</div>
+      </div>
+    </div>
+  `;
+}
+
+function buildPortfolioPage() {
+  buildPaperTradePage();
+  // also set nav tab
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => { if(t.dataset.page==='portfolio') t.classList.add('active'); });
+}
+
+function buildCategoryPage(cat) {
+  const config = {
+    defense: { emoji:'🛡️', title:'Defense & Military', color:'var(--accent3)', cards:['palantir'] },
+    tech:    { emoji:'💡', title:'Tech & AI',          color:'var(--accent2)', cards:['nvidia'] },
+    energy:  { emoji:'⚡', title:'Energy',             color:'var(--accent4)', cards:['oil'] },
+    healthcare:{ emoji:'🏥', title:'Healthcare',       color:'var(--accent)',  cards:[] },
+    evs:     { emoji:'🚗', title:'EVs & Transport',    color:'var(--accent2)', cards:[] },
+  };
+  const c = config[cat];
+  const feed = document.getElementById('mainFeed');
+  const cardsHTML = c.cards.length
+    ? c.cards.map(id => newsCard(id, cat === 'defense' ? 'geopolitics' : cat === 'tech' ? 'tech' : 'energy')).join('')
+    : `<div class="news-card"><div class="news-card-top" style="align-items:center;text-align:center;padding:30px 20px">
+        <div style="font-size:40px;margin-bottom:8px">${c.emoji}</div>
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px">No stories yet in ${c.title}</div>
+        <div style="font-size:13px;color:var(--text2)">Check back soon — we're adding new stories every day.</div>
+       </div></div>`;
+  feed.innerHTML = `
+    <div class="page-header"><div class="page-title" style="color:${c.color}">${c.emoji} ${c.title}</div><div class="page-sub">Stories and stocks in this sector</div></div>
+    ${cardsHTML}
+  `;
+}
+
+// ── Reusable HTML builders ────────────────────────────────────────────────────
+function heroBanner() {
+  return `
+    <div class="hero-banner fade-in">
+      <div>
+        <div class="hero-title">Good afternoon, Alex 👋</div>
+        <div class="hero-sub">3 big stories are moving markets today. Let's break them down.</div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="hero-stat-num">7</div><div class="hero-stat-label">Day Streak</div></div>
+          <div class="hero-stat"><div class="hero-stat-num">12</div><div class="hero-stat-label">Lessons</div></div>
+          <div class="hero-stat"><div class="hero-stat-num">3</div><div class="hero-stat-label">Stocks Watched</div></div>
+        </div>
+      </div>
+      <div class="level-ring">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="35" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>
+          <circle cx="40" cy="40" r="35" fill="none" stroke="url(#ringGrad)" stroke-width="6"
+            stroke-dasharray="219.9" stroke-dashoffset="55" stroke-linecap="round"/>
+          <defs><linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#00f5a0"/><stop offset="100%" stop-color="#00d4ff"/>
+          </linearGradient></defs>
+        </svg>
+        <div class="level-ring-inner"><div class="level-num">5</div><div class="level-label">Level</div></div>
+      </div>
+    </div>`;
+}
+
+function newsCard(id, cat) {
+  const cards = {
+    palantir: {
+      cat:'geopolitics', catClass:'cat-geopolitics', catLabel:'Geopolitics', hot:true, time:'2 hours ago',
+      title:'Middle East Conflict Escalates — Defense Contractors Are Surging',
+      body:'Tensions in the Middle East have intensified, with new military operations underway. Governments are fast-tracking defense spending, and companies that build intelligence software and weapons systems are seeing huge demand.',
+      insight:'When war or conflict breaks out, governments spend more on military tech, surveillance, and weapons. Companies that provide these things see their revenue — and stock prices — go up.',
+      stocks:[
+        {ticker:'PLTR',name:'Palantir',letter:'P',grad:'#00f5a0,#00c470',change:'+6.2%',up:true},
+        {ticker:'LMT',name:'Lockheed',letter:'L',grad:'#00d4ff,#0090cc',change:'+3.8%',up:true},
+        {ticker:'RTX',name:'Raytheon',letter:'R',grad:'#a855f7,#7c3aed',change:'+4.1%',up:true},
+      ],
+      diff:2
+    },
+    nvidia: {
+      cat:'tech', catClass:'cat-tech', catLabel:'Tech & AI', hot:false, time:'5 hours ago',
+      title:'ChatGPT Hits 500M Users — AI Chips Are the Real Winner',
+      body:'Every AI app in the world needs chips to run. The company that makes the most powerful AI chips is quietly becoming one of the most important in the world.',
+      insight:'Think of AI chips like electricity for AI — every single AI product needs them to work. More AI = more chip demand. This is a "picks and shovels" play.',
+      stocks:[
+        {ticker:'NVDA',name:'Nvidia',letter:'N',grad:'#76b900,#558800',change:'+2.9%',up:true},
+        {ticker:'AMD',name:'AMD',letter:'A',grad:'#ff6b35,#cc4400',change:'+1.7%',up:true},
+      ],
+      diff:1
+    },
+    oil: {
+      cat:'energy', catClass:'cat-energy', catLabel:'Energy', hot:false, time:'Yesterday',
+      title:'Gas Prices Spike at the Pump — What\'s Behind It?',
+      body:'This is connected to global oil supply cuts and Middle East instability. When oil gets pricier, energy companies make more money — but airlines and delivery companies struggle.',
+      insight:'Oil price spikes create winners AND losers. Energy companies win. Airlines, shipping, and fuel-heavy companies lose. This is called a "sector rotation."',
+      stocks:[
+        {ticker:'XOM',name:'Exxon',letter:'X',grad:'#00f5a0,#009955',change:'+2.1%',up:true},
+        {ticker:'DAL',name:'Delta Air',letter:'D',grad:'#ff4757,#cc0011',change:'-1.8%',up:false},
+      ],
+      diff:2
+    }
+  };
+  const c = cards[id];
+  if (!c) return '';
+  const diffDots = [1,2,3].map(i => `<div class="diff-dot" style="background:${i<=c.diff?'var(--accent)':'var(--border2)'}"></div>`).join('');
+  const diffLabel = c.diff===1?'Beginner':c.diff===2?'Intermediate':'Advanced';
+  const stocksHTML = c.stocks.map(s => `
+    <div class="stock-chip">
+      <div class="ticker-logo" style="background:linear-gradient(135deg,${s.grad})">${s.letter}</div>
+      <div class="stock-chip-info"><div class="stock-ticker">${s.ticker}</div><div class="stock-name">${s.name}</div></div>
+      <div class="stock-change ${s.up?'up':'down'}">${s.up?'▲':'▼'} ${s.change}</div>
+    </div>`).join('');
+
+  return `
+    <div class="news-card" data-cat="${c.cat}" onclick="openModal('${id}')">
+      <div class="news-card-top">
+        <div class="news-meta">
+          <span class="news-category ${c.catClass}">${c.catLabel}</span>
+          <span class="news-time">${c.time}</span>
+          ${c.hot ? '<span class="hot-badge">🔥 Hot</span>' : ''}
+        </div>
+        <div class="news-title">${c.title}</div>
+        <div class="news-body">${c.body}</div>
+      </div>
+      <div class="insight-box">
+        <div class="insight-header"><div class="dot"></div>StockWise Insight</div>
+        <div class="insight-text">${c.insight}</div>
+        <div class="stocks-row">${stocksHTML}</div>
+      </div>
+      <div class="card-actions">
+        <button class="action-btn btn-learn" onclick="event.stopPropagation();openModal('${id}')">🎓 Deep Dive</button>
+        <button class="action-btn btn-buy" onclick="event.stopPropagation();openModal('${id}')">📊 See Analysis</button>
+        <button class="action-btn btn-watch" onclick="event.stopPropagation()">+ Watchlist</button>
+        <div class="difficulty-badge">${diffDots} ${diffLabel}</div>
+      </div>
+    </div>`;
+}
+
+// ── Page header style ─────────────────────────────────────────────────────────
+const style = document.createElement('style');
+style.textContent = `
+  .page-header { margin-bottom:4px; }
+  .page-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; margin-bottom:4px; }
+  .page-sub { font-size:13px; color:var(--text3); }
+`;
+document.head.appendChild(style);
+
+// ── Lesson modal ──────────────────────────────────────────────────────────────
+const lessons = {
+  'stock-basics': {
+    title: 'What is a Stock?',
+    emoji: '🏦',
+    sections: [
+      { label: '📖 The Simple Version', text: 'When a company needs money to grow, it can split itself into millions of tiny pieces called <strong style="color:var(--accent)">shares</strong>. When you buy a share, you own a tiny slice of that company. If the company does well and grows, your slice becomes more valuable. If it shrinks, so does your slice.' },
+      { label: '🎮 Think of it Like This', text: 'Imagine your friend starts a lemonade stand and needs $100 to buy supplies. You give them $10 and they give you 10% ownership. If the lemonade stand makes $200, your 10% is now worth $20 — you doubled your money! That\'s basically how stocks work, just with millions of people and billions of dollars.' },
+      { label: '💡 Key Fact', text: 'When you buy stock in Apple, you literally become a part-owner of Apple. You\'re called a <strong style="color:var(--accent)">shareholder</strong>. Apple has about 15 billion shares outstanding — so you\'d own a very, very tiny slice, but still!' },
+    ],
+    quiz: { q: 'What does owning a share of a company mean?', options: ['You lent the company money', 'You own a small piece of the company', 'You work for the company', 'You can tell the CEO what to do'], correct: 1, feedback: '✅ Correct! You\'re a part-owner. If the company grows, your shares are worth more.', wrong: '❌ Owning a share = owning a piece. Not a loan, not a job. You\'re a shareholder!' }
+  },
+  'price-movement': {
+    title: 'How Stock Prices Move',
+    emoji: '📈',
+    sections: [
+      { label: '📖 Supply & Demand', text: 'Stock prices change every second because of supply and demand. If more people want to <strong style="color:var(--accent)">buy</strong> a stock than sell it, the price goes up. If more people want to <strong style="color:var(--red)">sell</strong> than buy, the price goes down. It\'s the same reason concert tickets sell for 10x face value when a show sells out.' },
+      { label: '🎮 Real Example', text: 'When Apple announces a brand new iPhone, everyone gets excited and wants to buy Apple stock. Suddenly millions of people are trying to buy, but there are only so many shares available — so the price shoots up. When bad news hits (like a lawsuit), everyone rushes to sell, and the price crashes.' },
+      { label: '💡 What Moves Prices?', text: 'Company earnings (profits), news events, CEO announcements, economic data, interest rates, and even social media can all move stock prices. This is why connecting <strong style="color:var(--accent)">real world news</strong> to stocks is such a powerful skill.' },
+    ],
+    quiz: { q: 'If millions of people suddenly want to buy Tesla stock, what happens to the price?', options: ['It goes down', 'It stays the same', 'It goes up', 'It disappears'], correct: 2, feedback: '✅ Yes! More buyers than sellers = price goes up. Basic supply and demand.', wrong: '❌ More demand + limited supply = higher prices. More buyers chasing the same shares pushes prices up!' }
+  },
+  'news-market': {
+    title: 'News & The Market',
+    emoji: '🌍',
+    sections: [
+      { label: '📖 Why News Matters', text: 'The stock market is basically millions of people guessing about the future. When news comes out, it changes those guesses. Good news for a company = higher stock price. Bad news = lower. The trick is understanding <em>which</em> news affects <em>which</em> companies.' },
+      { label: '🎮 The Chain Reaction', text: 'Think about how it works: A new law requires electric cars by 2030 → Tesla gets more customers → Tesla\'s revenue goes up → investors expect bigger profits → they buy more Tesla stock → price rises. Every major news event has a chain like this. StockWise helps you trace it.' },
+      { label: '💡 Not All News Affects All Stocks', text: 'A hurricane in Florida might hurt Disney (their theme park) but not Apple (their phones are made in China). Learning to identify <strong style="color:var(--accent)">which companies are affected by which events</strong> is one of the most valuable investing skills you can build.' },
+    ],
+    quiz: { q: 'A new law bans plastic packaging. Which company would be HURT most?', options: ['Tesla (electric cars)', 'A plastic bottle manufacturer', 'Nvidia (computer chips)', 'Netflix (streaming)'], correct: 1, feedback: '✅ Exactly! A plastic manufacturer\'s entire product is now restricted. Their revenue drops, and so does their stock.', wrong: '❌ Think about who actually makes and sells plastic. A law banning plastic directly hurts plastic manufacturers, not tech companies.' }
+  },
+  'diversification': {
+    title: 'Diversification',
+    emoji: '🧺',
+    sections: [
+      { label: '📖 Don\'t Put All Eggs in One Basket', text: '<strong style="color:var(--accent)">Diversification</strong> means spreading your money across different companies and industries so that if one fails, you don\'t lose everything. If you put 100% into one stock and it crashes, you lose everything. If you spread across 20 stocks, one crashing only hurts 5% of your portfolio.' },
+      { label: '🎮 A Real Scenario', text: 'Say you invest $1,000 — $500 in airlines and $500 in oil companies. When oil prices spike, your oil stocks go UP 20% and your airline stocks go DOWN 15%. Your portfolio is still up overall! That\'s diversification protecting you. If you\'d put everything in airlines, you\'d be down 15%.' },
+      { label: '💡 What\'s an ETF?', text: 'An ETF (Exchange Traded Fund) is basically a ready-made diversified basket. SPY is an ETF that holds the top 500 US companies. When you buy one share of SPY, you automatically own a tiny piece of Amazon, Apple, Google, Nvidia, and 496 other companies.' },
+    ],
+    quiz: { q: 'You have $500 to invest. Which approach is most diversified?', options: ['All $500 into one hot stock', '$250 in tech, $250 in energy', '$500 in an ETF holding 500 companies', '$250 in two similar tech companies'], correct: 2, feedback: '✅ An ETF with 500 companies is maximum diversification. One company failing barely moves the needle.', wrong: '❌ Diversification means spreading across as many different assets as possible. An ETF with 500 companies is far safer than concentrating in 1-2 stocks.' }
+  },
+  'charts': {
+    title: 'Reading a Stock Chart',
+    emoji: '📊',
+    sections: [
+      { label: '📖 What is a Candlestick Chart?', text: 'The most common chart type is a <strong style="color:var(--accent)">candlestick chart</strong>. Each "candle" represents one day of trading. A <strong style="color:var(--accent)">green candle</strong> means the price went UP that day. A <strong style="color:var(--red)">red candle</strong> means it went DOWN. The height of the candle shows how much it moved.' },
+      { label: '🎮 Trend Lines', text: 'If you connect the high points on a chart and they\'re going up over time, that\'s called an <strong style="color:var(--accent)">uptrend</strong>. If they\'re going down, it\'s a downtrend. Most beginners should only buy stocks in clear uptrends — "the trend is your friend."' },
+      { label: '💡 Volume', text: 'Volume tells you how many shares were traded that day. A big price move on HIGH volume is meaningful — lots of people agree. A big price move on LOW volume might just be a fluke. Always check volume when you see a dramatic price change.' },
+    ],
+    quiz: { q: 'A stock has 5 green candles in a row with increasing volume. What does this suggest?', options: ['The stock is crashing', 'Strong upward momentum with growing investor interest', 'The stock is about to split', 'Nothing, charts are random'], correct: 1, feedback: '✅ Green candles + rising volume = strong bullish momentum. Lots of buyers are stepping in.', wrong: '❌ Green candles = price rising each day. Rising volume = more investors joining in. Together they signal strong upward momentum.' }
+  },
+  'bull-bear': {
+    title: 'Bull vs Bear Markets',
+    emoji: '🔄',
+    sections: [
+      { label: '📖 The Two Market Moods', text: 'A <strong style="color:var(--accent)">Bull Market</strong> 🐂 is when stock prices are rising overall — usually 20%+ over months. Everyone\'s optimistic. The economy is growing. A <strong style="color:var(--red)">Bear Market</strong> 🐻 is when prices are falling — usually 20%+ drop. Fear takes over. Recessions often bring bear markets.' },
+      { label: '🎮 How to Remember It', text: 'Think of how a bull attacks: it thrusts its horns <strong style="color:var(--accent)">upward</strong>. A bear attacks by swiping <strong style="color:var(--red)">downward</strong>. That\'s the direction of the market. Bulls push prices up. Bears drag prices down.' },
+      { label: '💡 What Should You Do?', text: 'In a bull market: holding or buying more tends to work well. In a bear market: the temptation is to sell everything, but <strong style="color:var(--accent)">the best investors often buy more</strong> during bear markets because stocks are "on sale." Warren Buffett famously says: "Be fearful when others are greedy, and greedy when others are fearful."' },
+    ],
+    quiz: { q: 'The stock market just dropped 25% over 6 months. What type of market is this?', options: ['Bull Market', 'Bear Market', 'Sideways Market', 'Crypto Market'], correct: 1, feedback: '✅ A 20%+ drop = Bear Market. Time to look for sales, not panic!', wrong: '❌ A 20%+ market-wide decline over months = Bear Market. Bull markets are rising, not falling.' }
+  },
+};
+
+function openLesson(id) {
+  const l = lessons[id];
+  if (!l) return;
+  currentQuizAnswered = false;
+
+  const sectionsHTML = l.sections.map(s => `
+    <div class="explainer-section">
+      <div class="explainer-label">${s.label}</div>
+      <div class="explainer-text">${s.text}</div>
+    </div>
+  `).join('');
+
+  const quizOptsHTML = l.quiz.options.map((opt, i) => `
+    <button class="quiz-opt" onclick="answerLessonQuiz(${i}, ${l.quiz.correct}, '${id}')">${opt}</button>
+  `).join('');
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-header">
+      <div>
+        <div style="font-size:28px;margin-bottom:6px">${l.emoji}</div>
+        <div class="modal-title">${l.title}</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      ${sectionsHTML}
+      <div class="quiz-section">
+        <div class="quiz-q">🧠 Quick Check: ${l.quiz.q}</div>
+        <div class="quiz-options" id="quizOpts">${quizOptsHTML}</div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+      </div>
+      <div class="modal-cta">
+        <button class="cta-primary" onclick="closeModal()">✅ Mark Complete (+${Object.keys(lessons).indexOf(id)+1}00 XP)</button>
+        <button class="cta-secondary" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function answerLessonQuiz(selected, correct, id) {
+  if (currentQuizAnswered) return;
+  currentQuizAnswered = true;
+  const l = lessons[id];
+  const opts = document.querySelectorAll('.quiz-opt');
+  const feedback = document.getElementById('quizFeedback');
+  opts.forEach((o, i) => {
+    o.disabled = true;
+    if (i === correct) o.classList.add('correct');
+    else if (i === selected && selected !== correct) o.classList.add('wrong');
+  });
+  feedback.className = selected === correct ? 'quiz-feedback show good' : 'quiz-feedback show bad';
+  feedback.innerHTML = selected === correct ? l.quiz.feedback : l.quiz.wrong;
+}
+
+function showBuyModal() {
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-header">
+      <div><div class="modal-title">+ Buy a Stock</div></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="explainer-section">
+        <div class="explainer-label">🔍 Search for a Stock</div>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <input id="stockSearch" type="text" placeholder="e.g. AAPL, Tesla, Nvidia..." style="flex:1;padding:10px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none">
+          <button class="cta-primary" style="flex:0;padding:10px 18px;white-space:nowrap" onclick="searchStock()">Search</button>
+        </div>
+        <div id="searchResult" style="margin-top:12px"></div>
+      </div>
+      <div class="explainer-section">
+        <div class="explainer-label">⚡ Quick Buy</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${quickBuyRow('PLTR','Palantir','$24.81','P','#00f5a0,#00c470')}
+          ${quickBuyRow('NVDA','Nvidia','$136.40','N','#76b900,#558800')}
+          ${quickBuyRow('AAPL','Apple','$172.00','A','#555,#333')}
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function quickBuyRow(ticker, name, price, letter, grad) {
+  return `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:10px;border:1px solid var(--border)">
+      <div class="ticker-logo" style="width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,${grad});font-size:14px;font-weight:700;color:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0">${letter}</div>
+      <div style="flex:1"><div style="font-weight:700;font-size:14px">${ticker}</div><div style="font-size:12px;color:var(--text3)">${name}</div></div>
+      <div style="font-size:14px;font-weight:600;margin-right:8px">${price}</div>
+      <button class="action-btn btn-buy" onclick="confirmBuy('${ticker}','${price}')">Buy</button>
+    </div>`;
+}
+
+function confirmBuy(ticker, price) {
+  document.getElementById('searchResult').innerHTML = `
+    <div style="padding:12px 14px;background:rgba(0,245,160,0.08);border:1px solid rgba(0,245,160,0.25);border-radius:10px;color:var(--accent);font-size:13px;font-weight:500">
+      ✅ Added <strong>${ticker}</strong> at ${price} to your paper portfolio! 🎉
+    </div>`;
+}
+
+function searchStock() {
+  const val = document.getElementById('stockSearch').value.trim().toUpperCase();
+  if (!val) return;
+  document.getElementById('searchResult').innerHTML = `
+    <div style="padding:12px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;font-size:13px;color:var(--text2)">
+      Searching for <strong style="color:var(--text)">${val}</strong>... (Connect a live data source to enable real search)
+    </div>`;
+}
+
+// ── Modal data ────────────────────────────────────────────────────────────────
+const modals = {
+  palantir: {
+    category: 'Geopolitics',
+    categoryClass: 'cat-geopolitics',
+    title: 'Why War = Higher Defense Stock Prices',
+    event: 'Middle East Conflict Escalating',
+    what: 'There are ongoing military conflicts in the Middle East. Multiple countries are involved, and governments are spending billions on defense, intelligence, and surveillance technology to protect their assets.',
+    chain: [
+      { label: 'Event', text: '⚔️ War Escalates' },
+      { label: 'Demand', text: '🛡️ Govts Need More Defense Tech' },
+      { label: 'Revenue', text: '💰 Defense Companies Get Big Contracts' },
+      { label: 'Result', text: '📈 Stock Prices Go Up' }
+    ],
+    why: 'Palantir (PLTR) is a data analytics company that helps governments and militaries analyze huge amounts of information to make decisions. The US government is their biggest customer. When conflicts escalate, military agencies sign bigger contracts with Palantir — meaning more revenue, which pushes the stock price up.',
+    verdict: 'buy',
+    verdictTitle: '📈 Why Investors Are Buying',
+    verdictText: 'Defense stocks tend to go up during geopolitical instability because government contracts are locked in for years. Palantir specifically benefits because AI-powered intelligence is a top military priority. However, remember: wars also create uncertainty, and stock prices can reverse fast.',
+    risk: 'Medium-High risk. Defense stocks are tied to government policy, which can change.',
+    glossary: ['Government Contract', 'Geopolitical Risk', 'Revenue', 'Bull Run'],
+    quiz: {
+      q: 'Why does Palantir\'s stock go up during a conflict?',
+      options: [
+        'Because war makes all stocks go up',
+        'Because governments spend more on intelligence tech, giving Palantir bigger contracts',
+        'Because Palantir makes weapons',
+        'Because conflict lowers oil prices'
+      ],
+      correct: 1,
+      feedback: 'Exactly right! 🎉 Palantir makes data analytics software for governments. When conflict rises, defense budgets increase, and Palantir gets more contracts. More revenue = higher stock price.',
+      wrong: 'Not quite. War doesn\'t make all stocks rise. Airlines, tourism, and consumer companies often drop. Palantir specifically benefits because they provide intelligence software to military and government clients.'
+    }
+  },
+  nvidia: {
+    category: 'Tech & AI',
+    categoryClass: 'cat-tech',
+    title: 'The AI Boom\'s Biggest Beneficiary Isn\'t the AI Companies',
+    event: 'ChatGPT Hits 500M Weekly Users',
+    what: 'OpenAI announced that ChatGPT now has over 500 million weekly active users. AI tools are exploding everywhere — from apps you use to hospitals, cars, and factories. All of this AI needs computing power to run.',
+    chain: [
+      { label: 'Event', text: '🤖 AI Usage Explodes' },
+      { label: 'Need', text: '⚡ AI Needs Powerful Chips' },
+      { label: 'Supply', text: '🏭 Nvidia Makes the Best AI Chips' },
+      { label: 'Result', text: '📈 Nvidia Revenue & Stock Soar' }
+    ],
+    why: 'This is called a "picks and shovels" strategy. During the California Gold Rush, the people who got rich weren\'t always the miners — it was the people selling pickaxes and shovels. Nvidia sells the "shovels" of the AI gold rush: the GPU chips that power every major AI system, from ChatGPT to Google\'s Gemini.',
+    verdict: 'buy',
+    verdictTitle: '📈 Why Investors Love Nvidia Right Now',
+    verdictText: 'Nvidia has a near-monopoly on the chips that AI companies need. Companies like Microsoft, Google, and Amazon spend billions buying Nvidia\'s GPUs every quarter. As AI grows, so does demand for chips — and Nvidia is first in line.',
+    risk: 'Medium risk. Nvidia is dominant now, but competition from AMD and custom chips could challenge them.',
+    glossary: ['GPU', 'Picks & Shovels Strategy', 'Market Monopoly', 'Supply & Demand'],
+    quiz: {
+      q: 'What is the "picks and shovels" strategy in investing?',
+      options: [
+        'Investing directly in the most famous company in a hot industry',
+        'Investing in the companies that supply tools/resources to an entire booming industry',
+        'Selling all your stocks before a market crash',
+        'Only buying cheap, undervalued stocks'
+      ],
+      correct: 1,
+      feedback: 'Nailed it! 🎉 Instead of betting on which AI company "wins," you invest in the company that all AI companies must buy from — like Nvidia. Everyone needs their chips!',
+      wrong: 'Close, but the "picks and shovels" strategy is about investing in suppliers to a whole industry, not just the most famous player. Nvidia is the supplier — all AI companies need their chips regardless of who wins the AI race.'
+    }
+  },
+  oil: {
+    category: 'Energy',
+    categoryClass: 'cat-energy',
+    title: 'Why High Gas Prices Create Both Winners and Losers',
+    event: 'Global Oil Supply Tightens, Gas Prices Spike',
+    what: 'OPEC+ (a group of oil-producing countries) has cut oil production. Less oil supply + high demand = higher prices. You\'ve probably seen it at the gas station. This one event creates a ripple effect across tons of industries.',
+    chain: [
+      { label: 'Event', text: '🛢️ Oil Supply Cuts' },
+      { label: 'Effect 1', text: '💰 Energy Companies Profit' },
+      { label: 'Effect 2', text: '✈️ Airlines Lose Money' },
+      { label: 'Result', text: '↕️ Some Stocks Up, Some Down' }
+    ],
+    why: 'This is a classic example of how one event can split the stock market into winners and losers. Exxon and Chevron sell oil — when prices go up, they make more money per barrel. But Delta and FedEx burn jet fuel and diesel to operate. When fuel costs spike, their profit margins shrink, and their stock prices drop.',
+    verdict: 'caution',
+    verdictTitle: '⚖️ It Depends What You Own',
+    verdictText: 'If you own energy stocks (Exxon, Chevron), rising oil is great news. If you own airline or shipping stocks, it\'s bad news. This is called "sector rotation" — smart investors shift money between sectors based on these events. The key skill is knowing which companies benefit and which are hurt.',
+    risk: 'Depends on the sector. Energy = potential gains. Airlines/transport = potential losses.',
+    glossary: ['OPEC', 'Commodity', 'Profit Margin', 'Sector Rotation'],
+    quiz: {
+      q: 'When oil prices go up, which company\'s stock is most likely to RISE?',
+      options: [
+        'Delta Airlines (they need lots of jet fuel)',
+        'Amazon (they do massive shipping)',
+        'Exxon Mobil (they sell oil)',
+        'Uber (they rely on cheap driving costs)'
+      ],
+      correct: 2,
+      feedback: 'Yes! 🎉 Exxon SELLS oil. When oil prices rise, they earn more money for every barrel they sell. This increases their profits and usually pushes their stock price up.',
+      wrong: 'Think about who benefits when oil is expensive. Airlines, Amazon, and Uber all USE fuel as a major expense — when fuel costs more, their profits shrink. Exxon is the one that SELLS oil, so rising prices are good for them!'
+    }
+  }
+};
+
+let currentQuizAnswered = false;
+
+function openModal(id) {
+  const m = modals[id];
+  if (!m) return;
+  currentQuizAnswered = false;
+
+  const chainHTML = m.chain.map((n, i) => `
+    ${i > 0 ? '<div class="chain-arrow">→</div>' : ''}
+    <div class="chain-node"><strong>${n.label}</strong>${n.text}</div>
+  `).join('');
+
+  const verdictClass = m.verdict === 'buy' ? 'verdict-buy' : m.verdict === 'caution' ? 'verdict-caution' : 'verdict-sell';
+
+  const quizOptsHTML = m.quiz.options.map((opt, i) => `
+    <button class="quiz-opt" onclick="answerQuiz(${i}, ${m.quiz.correct}, '${id}')">${opt}</button>
+  `).join('');
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-header">
+      <div>
+        <div class="modal-category ${m.categoryClass}">${m.category}</div>
+        <div class="modal-title">${m.title}</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="explainer-section">
+        <div class="explainer-label">📰 What Happened</div>
+        <div class="explainer-text">${m.what}</div>
+      </div>
+
+      <div class="explainer-section">
+        <div class="explainer-label">🔗 The Chain Reaction</div>
+        <div class="chain-viz">${chainHTML}</div>
+      </div>
+
+      <div class="explainer-section">
+        <div class="explainer-label">🤔 Why Does This Move Stocks?</div>
+        <div class="explainer-text">${m.why}</div>
+      </div>
+
+      <div class="verdict-box ${verdictClass}">
+        <div class="verdict-title">${m.verdictTitle}</div>
+        <div class="verdict-text">${m.verdictText}</div>
+        <div style="margin-top:8px;font-size:12px;color:var(--text3)">⚠️ Risk level: ${m.risk}</div>
+      </div>
+
+      <div class="explainer-section" style="margin-top:16px">
+        <div class="explainer-label">💡 Ask AI to Explain More</div>
+        <button class="ai-explain-btn" id="aiBtn" onclick="getAIExplanation('${id}')">
+          ✨ Explain this like I'm 14
+        </button>
+        <div class="ai-insight-area" id="aiInsight" style="display:none;margin-top:10px"></div>
+      </div>
+
+      <div class="explainer-section">
+        <div class="explainer-label">📚 Key Terms</div>
+        <div class="glossary-pills">
+          ${m.glossary.map(t => `<div class="glossary-pill">${t}</div>`).join('')}
+        </div>
+      </div>
+
+      <div class="quiz-section">
+        <div class="quiz-q">🧠 Quick Check: ${m.quiz.q}</div>
+        <div class="quiz-options" id="quizOpts">${quizOptsHTML}</div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+      </div>
+
+      <div class="modal-cta">
+        <button class="cta-primary">📊 Add to Paper Portfolio</button>
+        <button class="cta-secondary" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+function answerQuiz(selected, correct, id) {
+  if (currentQuizAnswered) return;
+  currentQuizAnswered = true;
+
+  const m = modals[id];
+  const opts = document.querySelectorAll('.quiz-opt');
+  const feedback = document.getElementById('quizFeedback');
+
+  opts.forEach((o, i) => {
+    o.disabled = true;
+    if (i === correct) o.classList.add('correct');
+    else if (i === selected && selected !== correct) o.classList.add('wrong');
+  });
+
+  if (selected === correct) {
+    feedback.className = 'quiz-feedback show good';
+    feedback.innerHTML = '✅ ' + m.quiz.feedback;
+  } else {
+    feedback.className = 'quiz-feedback show bad';
+    feedback.innerHTML = '❌ ' + m.quiz.wrong;
+  }
+}
+
+async function getAIExplanation(id) {
+  const m = modals[id];
+  const btn = document.getElementById('aiBtn');
+  const area = document.getElementById('aiInsight');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spark">✨</span> Thinking...';
+  area.style.display = 'block';
+  area.innerHTML = '<div class="ai-loading"><div class="ai-dots"><span></span><span></span><span></span></div> Getting a simple explanation...</div>';
+
+  try {
+    const prompt = `You are StockWise, a finance educator for middle and high school students (ages 12-17). Explain the following stock market concept in a very friendly, simple way — use analogies they'd understand from everyday life, social media, or video games. Keep it under 80 words. Be enthusiastic but not cringey.
+
+Concept: ${m.title}
+Event: ${m.event}
+Core idea: ${m.why}
+
+Explain why this news makes certain stocks go up or down. Use a simple analogy. No jargon without explanation.`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const text = data.content?.find(b => b.type === 'text')?.text || 'Could not load explanation.';
+
+    area.innerHTML = text;
+    btn.innerHTML = '✨ Got another angle';
+    btn.disabled = false;
+  } catch (err) {
+    area.innerHTML = 'Could not connect to AI. Here\'s the simple version: ' + m.why;
+    btn.innerHTML = '✨ Try again';
+    btn.disabled = false;
+  }
+}
+
+// ── AI Story Refresh Engine ───────────────────────────────────────────────────
+
+// Live AI-generated stories get stored here, keyed by category
+const aiStories = {};
+
+const CATEGORIES = [
+  { key: 'geopolitics', label: 'Geopolitics',   emoji: '🌍', catClass: 'cat-geopolitics',
+    prompt: 'global conflict, war, sanctions, military spending, geopolitical tensions' },
+  { key: 'tech',        label: 'Tech & AI',      emoji: '💡', catClass: 'cat-tech',
+    prompt: 'artificial intelligence, tech companies, semiconductors, big tech earnings, software' },
+  { key: 'energy',      label: 'Energy',          emoji: '⚡', catClass: 'cat-energy',
+    prompt: 'oil prices, gas, renewable energy, OPEC, solar power, energy sector' },
+  { key: 'healthcare',  label: 'Healthcare',      emoji: '🏥', catClass: 'cat-finance',
+    prompt: 'FDA approvals, drug trials, hospital stocks, biotech, pharma, healthcare policy' },
+  { key: 'evs',         label: 'EVs & Transport', emoji: '🚗', catClass: 'cat-tech',
+    prompt: 'electric vehicles, Tesla, EV policy, autonomous driving, airlines, shipping, logistics' },
+];
+
+const STORY_PROMPT = (category, keywords) => `You are StockWise, a stock market education app for teenagers (ages 12-17). 
+
+Generate a fresh, engaging news story card about the ${category} sector (related to: ${keywords}).
+
+IMPORTANT: Invent a realistic, plausible news headline and scenario based on current trends in this sector. Make it feel like real news happening today.
+
+Respond ONLY with a valid JSON object, no markdown, no backticks, exactly this structure:
+{
+  "title": "Catchy headline (max 12 words)",
+  "body": "2-sentence plain-English summary of what happened (max 50 words)",
+  "insight": "1-2 sentence explanation of WHY this affects stocks, using simple language a 14-year-old would understand (max 40 words)",
+  "stocks": [
+    {"ticker": "TICK", "name": "Company Name", "letter": "T", "grad": "#color1,#color2", "change": "+X.X%", "up": true},
+    {"ticker": "TICK2", "name": "Company Name2", "letter": "T", "grad": "#color1,#color2", "change": "+X.X%", "up": true}
+  ],
+  "chain": [
+    {"label": "Event", "text": "emoji + short phrase"},
+    {"label": "Effect", "text": "emoji + short phrase"},
+    {"label": "Result", "text": "emoji + short phrase"},
+    {"label": "Outcome", "text": "emoji + short phrase"}
+  ],
+  "why": "2-3 sentences explaining the cause-and-effect in plain teen-friendly language. Use an everyday analogy.",
+  "verdict": "buy",
+  "verdictTitle": "emoji + short verdict title",
+  "verdictText": "2 sentences on what investors are doing and why. Keep it educational.",
+  "risk": "One sentence on risk level",
+  "glossary": ["Term1", "Term2", "Term3"],
+  "quiz": {
+    "q": "A multiple choice question testing understanding of the key concept",
+    "options": ["Wrong answer", "Correct answer", "Wrong answer", "Wrong answer"],
+    "correct": 1,
+    "feedback": "✅ Enthusiastic explanation of why this is right (1-2 sentences)",
+    "wrong": "❌ Friendly explanation of the right answer (1-2 sentences)"
+  },
+  "hot": false,
+  "time": "just now"
+}
+
+For stocks, use real ticker symbols. For grad colors use hex pairs like "#00f5a0,#00c470". Verdict must be "buy", "caution", or "sell".`;
+
+async function generateStoryForCategory(cat) {
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: STORY_PROMPT(cat.label, cat.prompt) }]
+    })
+  });
+  const data = await response.json();
+  const raw = data.content?.find(b => b.type === 'text')?.text || '';
+  // Strip any accidental markdown fences
+  const clean = raw.replace(/```json|```/g, '').trim();
+  return JSON.parse(clean);
+}
+
+function renderAICard(story, catKey, catClass, catLabel) {
+  const id = 'ai_' + catKey + '_' + Date.now();
+
+  // Register in modals so Deep Dive works
+  modals[id] = {
+    category: catLabel,
+    categoryClass: catClass,
+    title: story.title,
+    event: story.title,
+    what: story.body,
+    chain: story.chain,
+    why: story.why,
+    verdict: story.verdict,
+    verdictTitle: story.verdictTitle,
+    verdictText: story.verdictText,
+    risk: story.risk,
+    glossary: story.glossary,
+    quiz: story.quiz,
+  };
+
+  const diffDots = [1,2,3].map(i =>
+    `<div class="diff-dot" style="background:${i<=2?'var(--accent)':'var(--border2)'}"></div>`
+  ).join('');
+
+  const stocksHTML = (story.stocks||[]).map(s => `
+    <div class="stock-chip">
+      <div class="ticker-logo" style="background:linear-gradient(135deg,${s.grad})">${s.letter}</div>
+      <div class="stock-chip-info">
+        <div class="stock-ticker">${s.ticker}</div>
+        <div class="stock-name">${s.name}</div>
+      </div>
+      <div class="stock-change ${s.up?'up':'down'}">${s.up?'▲':'▼'} ${s.change}</div>
+    </div>`).join('');
+
+  return `
+    <div class="news-card" data-cat="${catKey}" onclick="openModal('${id}')">
+      <div class="news-card-top">
+        <div class="news-meta">
+          <span class="news-category ${catClass}">${catLabel}</span>
+          <span class="news-time">${story.time || 'just now'}</span>
+          ${story.hot ? '<span class="hot-badge">🔥 Hot</span>' : ''}
+          <span class="ai-badge">✨ AI</span>
+        </div>
+        <div class="news-title">${story.title}</div>
+        <div class="news-body">${story.body}</div>
+      </div>
+      <div class="insight-box">
+        <div class="insight-header"><div class="dot"></div>StockWise Insight</div>
+        <div class="insight-text">${story.insight}</div>
+        <div class="stocks-row">${stocksHTML}</div>
+      </div>
+      <div class="card-actions">
+        <button class="action-btn btn-learn" onclick="event.stopPropagation();openModal('${id}')">🎓 Deep Dive</button>
+        <button class="action-btn btn-buy" onclick="event.stopPropagation();openModal('${id}')">📊 See Analysis</button>
+        <button class="action-btn btn-watch" onclick="event.stopPropagation()">+ Watchlist</button>
+        <div class="difficulty-badge">${diffDots} Intermediate</div>
+      </div>
+    </div>`;
+}
+
+async function refreshAllStories() {
+  const btn = document.getElementById('refreshBtn');
+  const overlay = document.getElementById('refreshOverlay');
+  const progressList = document.getElementById('progressList');
+  const doneMsg = document.getElementById('refreshDoneMsg');
+
+  btn.disabled = true;
+  doneMsg.style.display = 'none';
+
+  // Build progress rows
+  progressList.innerHTML = CATEGORIES.map(c => `
+    <div class="progress-row" id="prow_${c.key}">
+      <div class="progress-icon">${c.emoji}</div>
+      <div class="progress-info">
+        <div class="progress-name">${c.label}</div>
+        <div class="progress-status" id="pstatus_${c.key}">Waiting...</div>
+      </div>
+      <div class="progress-spinner"></div>
+      <div class="progress-check" id="pcheck_${c.key}"></div>
+    </div>
+  `).join('');
+
+  overlay.classList.add('open');
+
+  // Generate stories one at a time (sequential to avoid rate limits)
+  for (const cat of CATEGORIES) {
+    const row = document.getElementById('prow_' + cat.key);
+    const status = document.getElementById('pstatus_' + cat.key);
+    const check = document.getElementById('pcheck_' + cat.key);
+
+    row.classList.add('active');
+    status.textContent = 'AI is writing this story...';
+
+    try {
+      const story = await generateStoryForCategory(cat);
+      aiStories[cat.key] = { story, cat };
+
+      row.classList.remove('active');
+      row.classList.add('done');
+      status.textContent = story.title.slice(0, 48) + '…';
+      check.textContent = '✅';
+    } catch (err) {
+      row.classList.remove('active');
+      row.classList.add('error');
+      status.textContent = 'Could not generate — will retry next refresh';
+      check.textContent = '⚠️';
+    }
+  }
+
+  // Inject all AI stories into the feed
+  injectAIStories();
+
+  doneMsg.style.display = 'block';
+  btn.disabled = false;
+  btn.innerHTML = '<span>✅</span> Updated!';
+  setTimeout(() => { btn.innerHTML = '<span>🔄</span> Refresh Stories'; }, 3000);
+}
+
+function injectAIStories() {
+  // Rebuild buildCategoryPage to include AI stories
+  const origBuildCategory = buildCategoryPage;
+
+  // Patch the feed page to show AI stories alongside static ones
+  const feedEl = document.getElementById('mainFeed');
+
+  // For each AI story, if we're on the feed page, append it
+  // Also update category pages so they use the AI content
+  for (const [catKey, {story, cat}] of Object.entries(aiStories)) {
+    const card = renderAICard(story, catKey, cat.catClass, cat.label);
+    // Store for category pages
+    aiStories[catKey].cardHTML = card;
+  }
+
+  // Refresh the current visible page
+  const activePage = document.querySelector('.nav-tab.active')?.dataset?.page || 'feed';
+  if (activePage === 'feed') {
+    buildFeedPageWithAI();
+  }
+}
+
+function buildFeedPageWithAI() {
+  const feed = document.getElementById('mainFeed');
+  let aiCardsHTML = '';
+  for (const [catKey, data] of Object.entries(aiStories)) {
+    if (data.cardHTML) aiCardsHTML += data.cardHTML;
+  }
+
+  feed.innerHTML = `
+    ${heroBanner()}
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div class="feed-tabs">
+        <button class="feed-tab active" onclick="filterFeed('all',this)">All Stories</button>
+        <button class="feed-tab" onclick="filterFeed('geopolitics',this)">Geopolitics</button>
+        <button class="feed-tab" onclick="filterFeed('tech',this)">Tech</button>
+        <button class="feed-tab" onclick="filterFeed('energy',this)">Energy</button>
+        <button class="feed-tab" onclick="filterFeed('healthcare',this)">Healthcare</button>
+        <button class="feed-tab" onclick="filterFeed('evs',this)">EVs</button>
+      </div>
+    </div>
+    ${newsCard('palantir','geopolitics')}
+    ${newsCard('nvidia','tech')}
+    ${newsCard('oil','energy')}
+    ${aiCardsHTML}
+  `;
+}
+
+// Patch buildCategoryPage to use AI stories when available
+const _origBuildCategory = buildCategoryPage;
+function buildCategoryPage(cat) {
+  const aiData = aiStories[cat];
+  const config = {
+    defense:    { emoji:'🛡️', title:'Defense & Military', color:'var(--accent3)' },
+    tech:       { emoji:'💡', title:'Tech & AI',          color:'var(--accent2)' },
+    energy:     { emoji:'⚡', title:'Energy',             color:'var(--accent4)' },
+    healthcare: { emoji:'🏥', title:'Healthcare',         color:'var(--accent)'  },
+    evs:        { emoji:'🚗', title:'EVs & Transport',    color:'var(--accent2)' },
+  };
+  const c = config[cat] || { emoji:'📊', title: cat, color:'var(--accent)' };
+  const feed = document.getElementById('mainFeed');
+
+  // Static cards per category
+  const staticMap = { defense:['palantir'], tech:['nvidia'], energy:['oil'], healthcare:[], evs:[] };
+  const staticCards = (staticMap[cat]||[]).map(id => {
+    const catLabel = cat==='defense'?'geopolitics':cat==='tech'?'tech':'energy';
+    return newsCard(id, catLabel);
+  }).join('');
+
+  const aiCard = aiData?.cardHTML || '';
+  const hasContent = staticCards || aiCard;
+
+  const placeholder = !hasContent ? `
+    <div class="news-card">
+      <div class="news-card-top" style="align-items:center;text-align:center;padding:30px 20px">
+        <div style="font-size:40px;margin-bottom:8px">${c.emoji}</div>
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px">No stories yet in ${c.title}</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:16px">Hit <strong style="color:var(--accent)">🔄 Refresh Stories</strong> in the top nav — AI will write a fresh story for this category in seconds!</div>
+        <button onclick="refreshAllStories()" style="padding:10px 20px;background:linear-gradient(135deg,var(--accent),#00c470);color:var(--bg);border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">✨ Generate Stories Now</button>
+      </div>
+    </div>` : '';
+
+  feed.innerHTML = `
+    <div class="page-header">
+      <div class="page-title" style="color:${c.color}">${c.emoji} ${c.title}</div>
+      <div class="page-sub">Stories and stocks in this sector</div>
+    </div>
+    ${staticCards}
+    ${aiCard}
+    ${placeholder}
+  `;
+}
+
+function closeRefreshOverlay() {
+  document.getElementById('refreshOverlay').classList.remove('open');
+  buildFeedPageWithAI();
+  // Make sure feed nav tab is active
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => { if(t.dataset.page==='feed') t.classList.add('active'); });
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  document.querySelector('.sidebar-item')?.classList.add('active');
+}
+
+// ── AI Story Generator ────────────────────────────────────────────────────────
+
+// Stores AI-generated stories keyed by category
+const aiStories = {};
+
+// Real news seeds per category — in a real app these come from NewsAPI
+// Here we use realistic recent-style headlines so Claude can build full stories
+const newsSeedsByCategory = {
+  healthcare: [
+    "FDA approves new Alzheimer's drug from Eli Lilly, called a breakthrough for millions of patients",
+    "Ozempic maker Novo Nordisk reports record profits as weight-loss drug demand surges worldwide",
+  ],
+  evs: [
+    "Tesla cuts Model Y prices for the third time this year as competition from Chinese EVs heats up",
+    "Uber announces all rides will be fully electric by 2030, partnering with GM and Rivian",
+  ],
+  defense: [
+    "US Congress approves $95 billion foreign aid package including new weapons systems for Ukraine and Israel",
+    "Palantir wins $480 million Pentagon AI contract to build battlefield intelligence software",
+  ],
+  tech: [
+    "Google announces Gemini Ultra 2 beats GPT-4 on every benchmark — shares jump 8%",
+    "Apple reveals Vision Pro 2 with a $1,500 price tag, targeting mainstream consumers",
+  ],
+  energy: [
+    "OPEC cuts oil production by 1.5 million barrels per day, sending crude prices above $90",
+    "US solar capacity hits a record high, with new installations doubling year over year",
+  ],
+  finance: [
+    "Federal Reserve signals it may cut interest rates twice in 2025 as inflation cools",
+    "Warren Buffett's Berkshire Hathaway hits $1 trillion market cap for the first time",
+  ],
+};
+
+const categoryConfig = {
+  healthcare: { emoji:'🏥', label:'Healthcare', catClass:'cat-finance', stocks:['UNH','JNJ','LLY','PFE','NVO'] },
+  evs:        { emoji:'🚗', label:'EVs & Transport', catClass:'cat-tech', stocks:['TSLA','RIVN','GM','UBER','F'] },
+  defense:    { emoji:'🛡️', label:'Defense & Military', catClass:'cat-geopolitics', stocks:['PLTR','LMT','RTX','NOC','BA'] },
+  tech:       { emoji:'💡', label:'Tech & AI', catClass:'cat-tech', stocks:['GOOGL','AAPL','MSFT','META','NVDA'] },
+  energy:     { emoji:'⚡', label:'Energy', catClass:'cat-energy', stocks:['XOM','CVX','ENPH','NEE','SLB'] },
+  finance:    { emoji:'🏦', label:'Finance & Economy', catClass:'cat-finance', stocks:['BRK.B','JPM','GS','BAC','V'] },
+};
+
+async function generateStoryForHeadline(headline, category) {
+  const cfg = categoryConfig[category];
+  const prompt = `You are StockWise, a stock market education app for teenagers (ages 13-17). 
+Given this real news headline, generate a complete educational story card in JSON format.
+
+Headline: "${headline}"
+Category: ${cfg.label}
+Relevant stock tickers to consider: ${cfg.stocks.join(', ')}
+
+Return ONLY valid JSON, no markdown, no explanation, just the raw JSON object:
+{
+  "title": "Catchy teen-friendly headline (max 12 words, make it feel like a social media post)",
+  "body": "2-sentence plain English summary of what happened and why it matters (max 40 words, no jargon)",
+  "insight": "1-2 sentences explaining the stock market connection in simple terms a 14-year-old understands (use a relatable analogy if possible)",
+  "verdict": "buy" | "caution" | "sell",
+  "verdictTitle": "Short verdict headline with emoji (e.g. '📈 Why Smart Investors Are Buying')",
+  "verdictText": "2-3 sentences explaining the investment case simply. Mention actual risk.",
+  "risk": "One sentence risk level explanation",
+  "chain": [
+    {"label": "Event", "text": "emoji + 3-5 words"},
+    {"label": "Impact", "text": "emoji + 3-5 words"},
+    {"label": "Revenue", "text": "emoji + 3-5 words"},
+    {"label": "Result", "text": "emoji + 3-5 words"}
+  ],
+  "stocks": [
+    {"ticker": "TICK", "name": "Company Name", "change": "+X.X%", "up": true, "letter": "T", "grad": "#color1,#color2"}
+  ],
+  "why": "2-3 sentence deeper explanation of why this news moves these specific stocks. Keep it simple and educational.",
+  "glossary": ["Term1", "Term2", "Term3"],
+  "quiz": {
+    "q": "A multiple choice question testing understanding of the concept",
+    "options": ["Wrong answer", "Correct answer", "Wrong answer", "Wrong answer"],
+    "correct": 1,
+    "feedback": "Positive reinforcement explaining why the correct answer is right",
+    "wrong": "Explanation of the correct answer for students who got it wrong"
+  }
+}
+
+Important rules:
+- Write like you're texting a smart friend, not writing a textbook
+- Every stock must have a unique gradient using two hex colors that match the company vibe
+- Make the quiz question genuinely test understanding of the NEWS → STOCK connection
+- Keep all text short and punchy`;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  const data = await response.json();
+  const text = data.content?.find(b => b.type === 'text')?.text || '';
+  // Strip any accidental markdown fences
+  const cleaned = text.replace(/```json|```/g, '').trim();
+  return JSON.parse(cleaned);
+}
+
+function setProgressItem(id, state, label) {
+  const el = document.getElementById('prog-' + id);
+  if (!el) return;
+  const icons = { waiting:'⏳', loading:'🔄', done:'✅', error:'❌' };
+  el.querySelector('.prog-icon').textContent = icons[state] || '⏳';
+  el.querySelector('.prog-label').textContent = label;
+  if (state === 'loading') el.querySelector('.prog-icon').style.animation = 'spin 1s linear infinite';
+  else el.querySelector('.prog-icon').style.animation = '';
+}
+
+function closeRefreshOverlay() {
+  document.getElementById('refreshOverlay').classList.remove('open');
+  buildFeedPage(); // go back to feed showing new stories
+  // reset sidebar active state
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  document.querySelector('.sidebar-item').classList.add('active');
+}
+
+async function refreshAllStories() {
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spark">✨</span> Generating...';
+
+  // Show overlay with progress list
+  const overlay = document.getElementById('refreshOverlay');
+  const progressList = document.getElementById('progressList');
+  document.getElementById('refreshDoneMsg').style.display = 'none';
+
+  const categories = Object.keys(newsSeedsByCategory);
+  progressList.innerHTML = categories.map(cat => {
+    const cfg = categoryConfig[cat];
+    return `
+      <div class="progress-item" id="prog-${cat}">
+        <span class="prog-icon" style="font-size:16px">⏳</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600">${cfg.emoji} ${cfg.label}</div>
+          <div class="prog-label" style="font-size:11px;color:var(--text3)">Waiting...</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  overlay.classList.add('open');
+
+  // Generate stories for each category sequentially
+  for (const cat of categories) {
+    setProgressItem(cat, 'loading', 'AI is reading the news...');
+    try {
+      const headline = newsSeedsByCategory[cat][Math.floor(Math.random() * newsSeedsByCategory[cat].length)];
+      const story = await generateStoryForHeadline(headline, cat);
+      story.category = cat;
+      story.catClass = categoryConfig[cat].catClass;
+      story.catLabel = categoryConfig[cat].label;
+      story.diff = 2;
+      story.time = 'Just now';
+      story.hot = false;
+
+      // Store story and also inject into modals so deep dive works
+      if (!aiStories[cat]) aiStories[cat] = [];
+      const storyId = 'ai_' + cat + '_' + Date.now();
+      story.id = storyId;
+      aiStories[cat].unshift(story);
+
+      // Register in modals object so openModal works
+      modals[storyId] = {
+        category: story.catLabel,
+        categoryClass: story.catClass,
+        title: story.title,
+        event: story.title,
+        what: story.body,
+        chain: story.chain,
+        why: story.why,
+        verdict: story.verdict,
+        verdictTitle: story.verdictTitle,
+        verdictText: story.verdictText,
+        risk: story.risk,
+        glossary: story.glossary || [],
+        quiz: story.quiz,
+      };
+
+      setProgressItem(cat, 'done', `"${story.title.slice(0,40)}..."`);
+    } catch (e) {
+      setProgressItem(cat, 'error', 'Could not generate — try again');
+    }
+  }
+
+  // Show done state
+  document.getElementById('refreshDoneMsg').style.display = 'block';
+  btn.disabled = false;
+  btn.innerHTML = '🔄 Refresh Stories';
+}
+
+// ── Render AI-generated story card ───────────────────────────────────────────
+function renderAICard(story) {
+  const stocksHTML = (story.stocks || []).map(s => `
+    <div class="stock-chip">
+      <div class="ticker-logo" style="background:linear-gradient(135deg,${s.grad || '#00f5a0,#009955'})">${s.letter || s.ticker[0]}</div>
+      <div class="stock-chip-info">
+        <div class="stock-ticker">${s.ticker}</div>
+        <div class="stock-name">${s.name}</div>
+      </div>
+      <div class="stock-change ${s.up ? 'up' : 'down'}">${s.up ? '▲' : '▼'} ${s.change}</div>
+    </div>`).join('');
+
+  const diffDots = [1,2,3].map(i => `<div class="diff-dot" style="background:${i<=story.diff?'var(--accent)':'var(--border2)'}"></div>`).join('');
+
+  return `
+    <div class="news-card" data-cat="${story.category}" onclick="openModal('${story.id}')">
+      <div class="news-card-top">
+        <div class="news-meta">
+          <span class="news-category ${story.catClass}">${story.catLabel}</span>
+          <span class="news-time">${story.time}</span>
+          <span style="font-size:10px;font-weight:600;color:var(--accent4);margin-left:4px">✨ AI Generated</span>
+        </div>
+        <div class="news-title">${story.title}</div>
+        <div class="news-body">${story.body}</div>
+      </div>
+      <div class="insight-box">
+        <div class="insight-header"><div class="dot"></div>StockWise Insight</div>
+        <div class="insight-text">${story.insight}</div>
+        <div class="stocks-row">${stocksHTML}</div>
+      </div>
+      <div class="card-actions">
+        <button class="action-btn btn-learn" onclick="event.stopPropagation();openModal('${story.id}')">🎓 Deep Dive</button>
+        <button class="action-btn btn-buy" onclick="event.stopPropagation();openModal('${story.id}')">📊 See Analysis</button>
+        <button class="action-btn btn-watch" onclick="event.stopPropagation()">+ Watchlist</button>
+        <div class="difficulty-badge">${diffDots} Intermediate</div>
+      </div>
+    </div>`;
+}
+
+// ── Override buildCategoryPage to show AI stories if available ────────────────
+const _origBuildCategoryPage = buildCategoryPage;
+buildCategoryPage = function(cat) {
+  const cfg = categoryConfig[cat] || { emoji:'📂', title: cat, color:'var(--accent)' };
+  const feed = document.getElementById('mainFeed');
+
+  const aiCards = (aiStories[cat] || []).map(renderAICard).join('');
+  const hasAI = aiCards.length > 0;
+
+  // Static cards for categories that already had them
+  const staticMap = { defense:'palantir', tech:'nvidia', energy:'oil' };
+  const staticCard = staticMap[cat] ? newsCard(staticMap[cat], cat === 'defense' ? 'geopolitics' : cat) : '';
+
+  const emptyState = !hasAI && !staticCard ? `
+    <div class="news-card">
+      <div class="news-card-top" style="align-items:center;text-align:center;padding:30px 20px">
+        <div style="font-size:40px;margin-bottom:8px">${cfg.emoji}</div>
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px">No stories yet in ${cfg.label || cat}</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:16px">Hit <strong style="color:var(--accent)">🔄 Refresh Stories</strong> in the top nav and the AI will generate fresh stories here automatically.</div>
+        <button onclick="refreshAllStories()" style="padding:10px 20px;background:linear-gradient(135deg,var(--accent),#00c470);color:var(--bg);border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">✨ Generate Stories Now</button>
+      </div>
+    </div>` : '';
+
+  feed.innerHTML = `
+    <div class="page-header">
+      <div class="page-title" style="color:${cfg.color || 'var(--accent)'}">${cfg.emoji} ${cfg.label || cat}</div>
+      <div class="page-sub">Stories and stocks in this sector</div>
+    </div>
+    ${aiCards}
+    ${staticCard}
+    ${emptyState}
+  `;
+};
+
+// Also override buildFeedPage to include AI stories at top
+const _origBuildFeedPage = buildFeedPage;
+buildFeedPage = function() {
+  const feed = document.getElementById('mainFeed');
+  // Collect all AI stories across all categories, most recent first
+  const allAI = Object.values(aiStories).flat().slice(0, 3).map(renderAICard).join('');
+  feed.innerHTML = `
+    ${heroBanner()}
+    <div class="feed-tabs">
+      <button class="feed-tab active" onclick="filterFeed('all',this)">All Stories</button>
+      <button class="feed-tab" onclick="filterFeed('geopolitics',this)">Geopolitics</button>
+      <button class="feed-tab" onclick="filterFeed('tech',this)">Tech</button>
+      <button class="feed-tab" onclick="filterFeed('energy',this)">Energy</button>
+    </div>
+    ${allAI}
+    ${newsCard('palantir','geopolitics')}
+    ${newsCard('nvidia','tech')}
+    ${newsCard('oil','energy')}
+  `;
+};
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+buildFeedPage();
+
+</script>
+</body>
+</html>
